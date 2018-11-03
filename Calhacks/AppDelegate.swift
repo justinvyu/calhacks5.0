@@ -16,8 +16,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
         FirebaseApp.configure()
+        
+        // Set the initial view controller to the Dashboard if a user is signed in already
+        self.window = UIWindow(frame: UIScreen.main.bounds)
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+
+        var initialViewController = storyboard.instantiateViewController(withIdentifier: "SignupVC")
+        if Auth.auth().currentUser != nil {
+            initialViewController = storyboard.instantiateViewController(withIdentifier: "DashboardVC")
+        }
+
+        self.window?.rootViewController = initialViewController
+        self.window?.makeKeyAndVisible()
         return true
     }
 

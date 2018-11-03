@@ -14,30 +14,40 @@ class ViewController: UIViewController {
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
     @IBOutlet weak var nameTextField: UITextField!
-    @IBOutlet weak var heightTextField: UITextField!
     @IBOutlet weak var weightTextField: UITextField!
-    @IBOutlet weak var ageTextField: UITextField!
-    @IBOutlet weak var genderTextField: UITextField!
+    @IBOutlet weak var sexToggle: UISegmentedControl!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
         let ref = Database.database().reference()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        print(uid)
+        
+        
     }
 
     @IBAction func createUser(_ sender: Any) {
+        // Retrieve user information to create user in Firebase
         let email = emailTextField.text!
         let password = passwordTextField.text!
         let name = nameTextField.text!
-        let height = Int(heightTextField.text!)!
         let weight = Int(weightTextField.text!)!
-        let age = Int(ageTextField.text!)!
-        let gender = genderTextField.text!
+        let sex = sexToggle.titleForSegment(at: sexToggle.selectedSegmentIndex)
         
-        Auth.auth().createUser(withEmail: email, password: password) { (authResult, error) in
-            print(error)
-            guard let user = authResult?.user else { return }
-            print(user)
+        // Create user based on what's passed in through the text fields
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            if error == nil && authResult != nil {
+                guard let user = authResult?.user else { return }
+                let ref = Database.database().reference()
+                ref.child("users/\(user.uid)/name").setValue(name)
+                ref.child("users/\(user.uid)/weight").setValue(weight)
+                ref.child("users/\(user.uid)/sex").setValue(sex)
+                ref.child("users/\(user.uid)/BAC").setValue(0)
+                ref.child("users/\(user.uid)/time").setValue(0)
+            } else {
+                print("Error creating user: ", error?.localizedDescription)
+            }
         }
     }
     
