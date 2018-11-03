@@ -1,0 +1,6 @@
+framework module Pods_Calhacks {
+  umbrella header "Pods-Calhacks-umbrella.h"
+
+  export *
+  module * { export * }
+}
