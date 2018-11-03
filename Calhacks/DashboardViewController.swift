@@ -9,7 +9,8 @@
 import UIKit
 
 class DashboardViewController: UIViewController {
-
+    @IBOutlet weak var bacLabel: UILabel!
+    
     var user = User()
     
     override func viewDidLoad() {

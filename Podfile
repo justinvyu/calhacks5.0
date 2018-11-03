@@ -8,6 +8,7 @@ target 'Calhacks' do
   # Pods for Calhacks
   pod 'Firebase/Core'
   pod 'Firebase/Database'
+  pod 'Firebase/Auth'
 
   target 'CalhacksTests' do
     inherit! :search_paths
