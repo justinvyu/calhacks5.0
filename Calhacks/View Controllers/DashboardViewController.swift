@@ -16,10 +16,14 @@ class DashboardViewController: UIViewController {
     var updateTimer: Timer!
 
     @IBAction func logOut(_ sender: Any) {
-        try! Auth.auth().signOut()
-        if let storyboard = self.storyboard {
-            let vc = storyboard.instantiateViewController(withIdentifier: "LandingPageVC")
-            self.present(vc, animated: true, completion: nil)
+        do {
+            try Auth.auth().signOut()
+            if let storyboard = self.storyboard {
+                let vc = storyboard.instantiateViewController(withIdentifier: "LandingPageVC")
+                self.present(vc, animated: true, completion: nil)
+            }
+        } catch let signOutError as NSError {
+            print ("Error signing out: %@", signOutError.localizedDescription)
         }
     }
     
@@ -118,7 +122,7 @@ class DashboardViewController: UIViewController {
         super.viewDidLoad()
         //add to list of drinks
         //update / calculate BAC based on last time drank
-        
+        updateBAC()
         self.updateTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(DashboardViewController.updateBAC), userInfo: nil, repeats: true)
     }
     

@@ -22,7 +22,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.window = UIWindow(frame: UIScreen.main.bounds)
         let storyboard = UIStoryboard(name: "Main", bundle: nil)
 
-        var initialViewController = storyboard.instantiateViewController(withIdentifier: "SignupVC")
+        var initialViewController = storyboard.instantiateViewController(withIdentifier: "LandingPageVC")
         if Auth.auth().currentUser != nil {
             initialViewController = storyboard.instantiateViewController(withIdentifier: "DashboardVC")
         }
