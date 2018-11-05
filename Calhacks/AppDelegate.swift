@@ -24,7 +24,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         var initialViewController = storyboard.instantiateViewController(withIdentifier: "LandingPageVC")
         if Auth.auth().currentUser != nil {
-            initialViewController = storyboard.instantiateViewController(withIdentifier: "DashboardVC")
+            initialViewController = storyboard.instantiateViewController(withIdentifier: "MainTabVC")
         }
 
         self.window?.rootViewController = initialViewController

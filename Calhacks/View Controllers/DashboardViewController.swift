@@ -12,9 +12,14 @@ import FirebaseDatabase
 
 class DashboardViewController: UIViewController {
     @IBOutlet weak var bacLabel: UILabel!
+    @IBOutlet weak var timerLabel: UILabel!
     
     var updateTimer: Timer!
-
+    
+    @IBOutlet weak var beerButton: UIButton!
+    @IBOutlet weak var shotButton: UIButton!
+    @IBOutlet weak var wineButton: UIButton!
+    
     @IBAction func logOut(_ sender: Any) {
         do {
             try Auth.auth().signOut()
@@ -26,6 +31,19 @@ class DashboardViewController: UIViewController {
             print ("Error signing out: %@", signOutError.localizedDescription)
         }
     }
+    
+    @IBAction func reset(_ sender: Any) {
+        let ref = Database.database().reference()
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        ref.child("users/\(uid)/BAC").setValue(0)
+        updateBAC()
+        ref.child("users/\(uid)").observe(.value, with: { (s) in
+            if s.hasChild("group") {
+                ref.child("users/\(uid)/group").removeValue()
+            }
+        })
+    }
+    
     
     @IBAction func Beer(_ sender: Any) {
         let ref = Database.database().reference()
@@ -59,6 +77,12 @@ class DashboardViewController: UIViewController {
                         bac = bac + bacChange
                     }
                 }
+                let timeLeft = bac / m
+                let hours = Int(timeLeft)
+                let minutes = Int((timeLeft - Double(hours)) * 60)
+                print(minutes)
+                print(hours)
+                self.timerLabel.text = "\(hours) hr \(minutes) min until sober"
                 ref.child("users/\(uid)/time").setValue(timeInterval)
                 ref.child("users/\(uid)/BAC").setValue(bac)
                 self.bacLabel.text = String(format: "%0.4f%", bac)
@@ -76,17 +100,8 @@ class DashboardViewController: UIViewController {
         //get user BAC
         // calculate
     }
-    @IBAction func Shot(_ sender: Any) {
-        let ref = Database.database().reference()
-        
-    }
-    @IBAction func Wine(_ sender: Any) {
-        let ref = Database.database().reference()
-        
-    }
     
     @objc func updateBAC() {
-        print("UPDATE!!!!")
         let ref = Database.database().reference()
         //get current user, check if list of drinks is empty, if it is, create one, recalculate BAC level based upon user
         let timeInterval = NSDate().timeIntervalSince1970
@@ -102,15 +117,24 @@ class DashboardViewController: UIViewController {
                 guard var prevBAC = value["BAC"] as? Double else { return }
                 let timeDifference = (timeInterval - timeSince) / 3600
                 if timeSince != 0 { // If there hasn't been a first drink yet,
-                    print(timeDifference)
+                    
+                    //add it in the other function as well
                     let bacChange = prevBAC - m * timeDifference
                     ref.child("users/\(uid)/time").setValue(timeInterval)
                     if bacChange > 0 {
                         prevBAC = bacChange
+                        let timeLeft = prevBAC / m
                         ref.child("users/\(uid)/BAC").setValue(prevBAC)
+                        let hours = Int(timeLeft)
+                        let minutes = Int((timeLeft - Double(hours)) * 60)
+                        print(minutes)
+                        print(hours)
+                        self.timerLabel.text = "\(hours) hr \(minutes) min until sober"
                         self.bacLabel.text = String(format: "%0.4f%", prevBAC)
                     } else {
                         ref.child("users/\(uid)/BAC").setValue(0)
+                        self.timerLabel.text = "00 hr 00 min until sober"
+                        print("CALLED FUNCTION")
                         self.bacLabel.text = String(format: "%0.4f%", 0)
                     }
                 }
@@ -124,6 +148,12 @@ class DashboardViewController: UIViewController {
         //update / calculate BAC based on last time drank
         updateBAC()
         self.updateTimer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(DashboardViewController.updateBAC), userInfo: nil, repeats: true)
+        
+        let topLeft = UIColor(red: 116/255, green: 185/255, blue: 1, alpha: 1).cgColor
+        let middle = UIColor(red: 9/255, green: 132/255, blue: 227/255, alpha: 1).cgColor
+        let bottomRight = UIColor(red: 162/255, green: 155/255, blue: 254/255, alpha: 1).cgColor
+        self.view.gradientLayer.colors = [topLeft, bottomRight]
+        self.view.gradientLayer.gradient = GradientPoint.topLeftBottomRight.draw()
     }
     
     deinit {

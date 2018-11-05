@@ -26,7 +26,10 @@ class ViewController: UIViewController {
         
         
     }
-
+    @IBAction func Back(_ sender: Any) {
+         self.dismiss(animated: true, completion: nil)
+    }
+    
     @IBAction func createUser(_ sender: Any) {
         // Retrieve user information to create user in Firebase
         let email = emailTextField.text!
@@ -45,6 +48,7 @@ class ViewController: UIViewController {
                 ref.child("users/\(user.uid)/sex").setValue(sex)
                 ref.child("users/\(user.uid)/BAC").setValue(0)
                 ref.child("users/\(user.uid)/time").setValue(0)
+                ref.child("users/\(user.uid)/email").setValue(email)             
             } else {
                 print("Error creating user: ", error?.localizedDescription)
             }

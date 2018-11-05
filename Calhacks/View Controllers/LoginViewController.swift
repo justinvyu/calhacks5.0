@@ -13,6 +13,10 @@ class LoginViewController: UIViewController {
 
     @IBOutlet weak var emailTextField: UITextField!
     @IBOutlet weak var passwordTextField: UITextField!
+    @IBAction func Back(_ sender: Any) {
+        self.dismiss(animated: true, completion: nil)
+            
+    }
     
     @IBAction func login(_ sender: Any) {
         guard let email = emailTextField.text as String? else { return }
